@@ -6,7 +6,8 @@ export type UserRole = "admin" | "mentor" | "mentee";
 
 // Define the shape of a User document
 export interface IUser extends Document {
-  name: string;
+  firstName: string;
+  lastName: string;
   email: string;
   password: string;
   role: UserRole;
@@ -19,7 +20,8 @@ export interface IUser extends Document {
 // Create the schema
 const userSchema = new Schema<IUser>(
   {
-    name: { type: String, required: true },
+    firstName: { type: String, required: true },
+    lastName: { type: String, required: true },
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
     role: {

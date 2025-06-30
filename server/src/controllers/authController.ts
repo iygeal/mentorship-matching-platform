@@ -14,10 +14,10 @@ const generateToken = (userId: string, role: string) => {
 // @access  Public
 export const registerUser = async (req: Request, res: Response) => {
   try {
-    const { name, email, password, role } = req.body;
+    const { firstName, lastName, email, password, role } = req.body;
 
     // Basic input validation
-    if (!name || !email || !password) {
+    if (!firstName || !lastName || !email || !password) {
       return res
         .status(400)
         .json({ message: "Please fill all required fields" });
@@ -35,7 +35,7 @@ export const registerUser = async (req: Request, res: Response) => {
     }
 
     // Create and save new user
-    const user = new User({ name, email, password, role });
+    const user = new User({ firstName, lastName, email, password, role });
     await user.save();
 
     // Generate JWT token
@@ -49,7 +49,8 @@ export const registerUser = async (req: Request, res: Response) => {
       message: "User registered successfully",
       user: {
         id: user._id,
-        name: user.name,
+        firstName: user.firstName,
+        lastName: user.lastName,
         email: user.email,
         role: user.role,
       },
@@ -102,7 +103,8 @@ export const loginUser = async (req: Request, res: Response) => {
       message: "Login successful",
       user: {
         id: user._id,
-        name: user.name,
+        firstName: user.firstName,
+        lastName: user.lastName,
         email: user.email,
         role: user.role,
       },
