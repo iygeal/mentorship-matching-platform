@@ -60,3 +60,56 @@ export const registerUser = async (req: Request, res: Response) => {
     res.status(500).json({ message: "Server error" });
   }
 };
+
+// LOGIN CONTROLLER
+export const loginUser = async (req: Request, res: Response) => {
+  try {
+    const { email, password } = req.body;
+
+    // Basic check
+    if (!email || !password) {
+      return res
+        .status(400)
+        .json({ message: "Email and password are required" });
+    }
+
+    // Normalize & validate email
+    const normalizedEmail = validateEmail(email);
+    if (!normalizedEmail) {
+      return res.status(400).json({ message: "Invalid email format" });
+    }
+
+    // Find user by email
+    const user = await User.findOne({ email: normalizedEmail });
+    if (!user) {
+      return res.status(401).json({ message: "Invalid credentials" });
+    }
+
+    // Compare password
+    const isMatch = await user.comparePassword(password);
+    if (!isMatch) {
+      return res.status(401).json({ message: "Invalid credentials" });
+    }
+
+    // Generate token
+    const token = generateToken(
+      (user._id as mongoose.Types.ObjectId).toString(),
+      user.role
+    );
+
+    // Return success response
+    return res.status(200).json({
+      message: "Login successful",
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+      },
+      token,
+    });
+  } catch (error) {
+    console.error("Login Error:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
