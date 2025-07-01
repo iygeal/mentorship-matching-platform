@@ -14,7 +14,8 @@ const generateToken = (userId: string, role: string) => {
 // @access  Public
 export const registerUser = async (req: Request, res: Response) => {
   try {
-    const { firstName, lastName, email, password, role } = req.body;
+    const { firstName, lastName, email, password, role, skills, goals, bio } =
+      req.body;
 
     // Basic input validation
     if (!firstName || !lastName || !email || !password) {
@@ -35,7 +36,16 @@ export const registerUser = async (req: Request, res: Response) => {
     }
 
     // Create and save new user
-    const user = new User({ firstName, lastName, email, password, role });
+    const user = new User({
+      firstName,
+      lastName,
+      email,
+      password,
+      role,
+      skills,
+      goals,
+      bio,
+    });
     await user.save();
 
     // Generate JWT token
@@ -53,6 +63,9 @@ export const registerUser = async (req: Request, res: Response) => {
         lastName: user.lastName,
         email: user.email,
         role: user.role,
+        skills: user.skills,
+        goals: user.goals,
+        bio: user.bio,
       },
       token,
     });
@@ -107,6 +120,9 @@ export const loginUser = async (req: Request, res: Response) => {
         lastName: user.lastName,
         email: user.email,
         role: user.role,
+        skills: user.skills,
+        goals: user.goals,
+        bio: user.bio,
       },
       token,
     });
