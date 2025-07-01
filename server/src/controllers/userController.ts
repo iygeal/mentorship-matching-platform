@@ -82,7 +82,9 @@ export const getMentors = async (req: Request, res: Response) => {
 
     // If skill is provided, filter mentors who have that skill
     if (skill) {
-      query.skills = { $in: [skill] };
+      query.skills = {
+        $elemMatch: { $regex: new RegExp(skill as string, "i") },
+      };
     }
 
     const mentors = await User.find(query).select("-password");
