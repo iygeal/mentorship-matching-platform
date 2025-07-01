@@ -1,4 +1,4 @@
-import { Response } from "express";
+import { Request, Response } from "express";
 import User from "../models/user";
 import { AuthenticatedRequest } from "../middleware/authMiddleware";
 
@@ -66,6 +66,33 @@ export const updateProfile = async (
     });
   } catch (error) {
     console.error("UpdateProfile Error:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+// @desc    Get all mentors (optional skill filter)
+// @route   GET /users/mentors
+// @access  Public (or protect if needed)
+export const getMentors = async (req: Request, res: Response) => {
+  try {
+    const { skill } = req.query;
+
+    // Build query
+    const query: any = { role: "mentor" };
+
+    // If skill is provided, filter mentors who have that skill
+    if (skill) {
+      query.skills = { $in: [skill] };
+    }
+
+    const mentors = await User.find(query).select("-password");
+
+    res.status(200).json({
+      message: "Mentors fetched successfully",
+      mentors,
+    });
+  } catch (error) {
+    console.error("GetMentors Error:", error);
     res.status(500).json({ message: "Server error" });
   }
 };
