@@ -6,6 +6,7 @@ export interface ISession extends Document {
   scheduledAt: Date;
   notes?: string;
   feedback?: string;
+  rating?: number;
 }
 
 const sessionSchema = new Schema<ISession>(
@@ -14,7 +15,8 @@ const sessionSchema = new Schema<ISession>(
     mentee: { type: Schema.Types.ObjectId, ref: "User", required: true },
     scheduledAt: { type: Date, required: true },
     notes: { type: String },
-    feedback: { type: String }, // added later by mentor or mentee
+    feedback: { type: String },
+    rating: { type: Number },
   },
   { timestamps: true }
 );
