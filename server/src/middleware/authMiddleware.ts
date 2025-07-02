@@ -31,7 +31,7 @@ const protect = (
       role: decoded.role,
     };
 
-    next(); // Token is valid, move to the next middleware/route
+    return next(); // Token is valid, move to the next middleware/route
   } catch (error) {
     console.error("JWT verification failed:", error);
     res.status(401).json({ message: "Invalid or expired token" });
