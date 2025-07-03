@@ -1,10 +1,18 @@
-import { RequestHandler } from "express";
+import { Request, RequestHandler } from "express";
 import jwt from "jsonwebtoken";
 
-// Extend Request type to include `user`
-export interface AuthenticatedRequest extends Request {
-  user?: { userId: string; role: string };
+export interface AuthenticatedRequest<
+  P = any,
+  ResBody = any,
+  ReqBody = any,
+  ReqQuery = any
+> extends Request<P, ResBody, ReqBody, ReqQuery> {
+  user?: {
+    userId: string;
+    role: string;
+  };
 }
+
 
 const protect: RequestHandler = (req, res, next) => {
   try {
