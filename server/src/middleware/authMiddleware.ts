@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from "express";
+import { RequestHandler } from "express";
 import jwt from "jsonwebtoken";
 
 // Extend Request type to include `user`
@@ -6,16 +6,13 @@ export interface AuthenticatedRequest extends Request {
   user?: { userId: string; role: string };
 }
 
-const protect = (
-  req: AuthenticatedRequest,
-  res: Response,
-  next: NextFunction
-) => {
+const protect: RequestHandler = (req, res, next) => {
   try {
     const authHeader = req.headers.authorization;
 
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
-      return res.status(401).json({ message: "No token provided" });
+      res.status(401).json({ message: "No token provided" });
+      return;
     }
 
     const token = authHeader.split(" ")[1];
@@ -26,12 +23,12 @@ const protect = (
       role: string;
     };
 
-    req.user = {
+    (req as AuthenticatedRequest).user = {
       userId: decoded.userId,
       role: decoded.role,
     };
 
-    return next(); // Token is valid, move to the next middleware/route
+    next();
   } catch (error) {
     console.error("JWT verification failed:", error);
     res.status(401).json({ message: "Invalid or expired token" });
