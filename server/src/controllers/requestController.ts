@@ -1,40 +1,44 @@
-import { Request, Response } from "express";
+import { Response } from "express";
 import MentorshipRequest from "../models/mentorshipRequest";
 import User from "../models/user";
 import { AuthenticatedRequest } from "../middleware/authMiddleware";
 
-// @desc    Send mentorship request
-// @route   POST /requests
-// @access  Private (mentee only)
-export const sendRequest = async (req: AuthenticatedRequest, res: Response) => {
+interface RespondToRequestBody {
+  status: "accepted" | "rejected";
+}
+
+// @desc Send mentorship request
+export const sendRequest = async (
+  req: AuthenticatedRequest,
+  res: Response
+): Promise<void> => {
   try {
     const { mentorId } = req.body;
 
-    if (!req.user || !req.user.userId) {
-      return res.status(401).json({ message: "Unauthorized" });
+    if (!req.user?.userId) {
+      res.status(401).json({ message: "Unauthorized" });
+      return;
     }
 
-    // Only mentees should send requests
     if (req.user.role !== "mentee") {
-      return res
-        .status(403)
-        .json({ message: "Only mentees can send requests" });
+      res.status(403).json({ message: "Only mentees can send requests" });
+      return;
     }
 
-    // Check if mentor exists and is actually a mentor
     const mentor = await User.findById(mentorId);
     if (!mentor || mentor.role !== "mentor") {
-      return res.status(404).json({ message: "Mentor not found" });
+      res.status(404).json({ message: "Mentor not found" });
+      return;
     }
 
-    // Check if request already exists
     const existing = await MentorshipRequest.findOne({
       mentee: req.user.userId,
       mentor: mentorId,
     });
 
     if (existing) {
-      return res.status(409).json({ message: "Request already sent" });
+      res.status(409).json({ message: "Request already sent" });
+      return;
     }
 
     const request = new MentorshipRequest({
@@ -54,15 +58,16 @@ export const sendRequest = async (req: AuthenticatedRequest, res: Response) => {
   }
 };
 
-// @desc    View requests the mentee has sent
-// @route   GET /requests/sent
-// @access  Private (mentee)
+// @desc View requests the mentee has sent
 export const getSentRequests = async (
   req: AuthenticatedRequest,
   res: Response
-) => {
+): Promise<void> => {
   try {
-    if (!req.user) return res.status(401).json({ message: "Unauthorized" });
+    if (!req.user?.userId) {
+      res.status(401).json({ message: "Unauthorized" });
+      return;
+    }
 
     const requests = await MentorshipRequest.find({ mentee: req.user.userId })
       .populate("mentor", "firstName lastName email role")
@@ -75,15 +80,16 @@ export const getSentRequests = async (
   }
 };
 
-// @desc    View requests the mentor has received
-// @route   GET /requests/received
-// @access  Private (mentor)
+// @desc View requests the mentor has received
 export const getReceivedRequests = async (
   req: AuthenticatedRequest,
   res: Response
-) => {
+): Promise<void> => {
   try {
-    if (!req.user) return res.status(401).json({ message: "Unauthorized" });
+    if (!req.user?.userId) {
+      res.status(401).json({ message: "Unauthorized" });
+      return;
+    }
 
     const requests = await MentorshipRequest.find({ mentor: req.user.userId })
       .populate("mentee", "firstName lastName email role")
@@ -96,42 +102,41 @@ export const getReceivedRequests = async (
   }
 };
 
-// @desc    Accept or reject a mentorship request
-// @route   PUT /requests/:id
-// @access  Private (mentor only)
+// @desc Accept or reject a mentorship request
 export const respondToRequest = async (
-  req: AuthenticatedRequest,
+  req: AuthenticatedRequest<{ id: string }, {}, RespondToRequestBody>,
   res: Response
-) => {
+): Promise<void> => {
   try {
     const { id } = req.params;
     const { status } = req.body;
 
-    if (!req.user) return res.status(401).json({ message: "Unauthorized" });
-
-    // Must be a mentor
-    if (req.user.role !== "mentor") {
-      return res
-        .status(403)
-        .json({ message: "Only mentors can respond to requests" });
+    if (!req.user?.userId) {
+      res.status(401).json({ message: "Unauthorized" });
+      return;
     }
 
-    // Status must be valid
+    if (req.user.role !== "mentor") {
+      res.status(403).json({ message: "Only mentors can respond to requests" });
+      return;
+    }
+
     if (!["accepted", "rejected"].includes(status)) {
-      return res.status(400).json({ message: "Invalid status" });
+      res.status(400).json({ message: "Invalid status" });
+      return;
     }
 
     const request = await MentorshipRequest.findById(id);
-
     if (!request) {
-      return res.status(404).json({ message: "Request not found" });
+      res.status(404).json({ message: "Request not found" });
+      return;
     }
 
-    // Ensure mentor owns this request
     if (request.mentor.toString() !== req.user.userId) {
-      return res
+      res
         .status(403)
         .json({ message: "Not authorized to update this request" });
+      return;
     }
 
     request.status = status;

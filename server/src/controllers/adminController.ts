@@ -6,7 +6,10 @@ import Session from "../models/session";
 // @desc    Get all users
 // @route   GET /admin/users
 // @access  Private (Admin only)
-export const getAllUsers = async (req: Request, res: Response) => {
+export const getAllUsers = async (
+  _req: Request,
+  res: Response
+): Promise<void> => {
   try {
     const users = await User.find().select("-password");
 
@@ -22,8 +25,11 @@ export const getAllUsers = async (req: Request, res: Response) => {
 
 // @desc    View all accepted mentorship matches
 // @route   GET /admin/matches
-// @access  Admin
-export const getAllMatches = async (req: Request, res: Response) => {
+// @access  Private (Admin)
+export const getAllMatches = async (
+  _req: Request,
+  res: Response
+): Promise<void> => {
   try {
     const matches = await MentorshipRequest.find({ status: "accepted" })
       .populate("mentee", "firstName lastName email")
@@ -41,8 +47,11 @@ export const getAllMatches = async (req: Request, res: Response) => {
 
 // @desc    Get number of sessions held
 // @route   GET /admin/sessions/stats
-// @access  Admin
-export const getSessionStats = async (_req: Request, res: Response) => {
+// @access  Private (Admin)
+export const getSessionStats = async (
+  _req: Request,
+  res: Response
+): Promise<void> => {
   try {
     const totalSessions = await Session.countDocuments();
     const feedbackGiven = await Session.countDocuments({
@@ -60,43 +69,54 @@ export const getSessionStats = async (_req: Request, res: Response) => {
   }
 };
 
-
 // @desc    Manually assign mentor to mentee
 // @route   PUT /admin/assign
-// @access  Admin
-export const assignMentor = async (req: Request, res: Response) => {
-    try {
-      const { mentorId, menteeId } = req.body;
+// @access  Private (Admin)
+interface AssignBody {
+  mentorId: string;
+  menteeId: string;
+}
 
-      if (!mentorId || !menteeId) {
-        return res.status(400).json({ message: 'mentorId and menteeId are required' });
-      }
+export const assignMentor = async (
+  req: Request<{}, {}, AssignBody>,
+  res: Response
+): Promise<void> => {
+  try {
+    const { mentorId, menteeId } = req.body;
 
-      const existing = await MentorshipRequest.findOne({
-        mentor: mentorId,
-        mentee: menteeId,
-      });
-
-      if (existing) {
-        existing.status = 'accepted';
-        await existing.save();
-        return res.status(200).json({ message: 'Match updated to accepted', match: existing });
-      }
-
-      const match = new MentorshipRequest({
-        mentor: mentorId,
-        mentee: menteeId,
-        status: 'accepted',
-      });
-
-      await match.save();
-
-      res.status(201).json({
-        message: 'Mentor assigned successfully',
-        match,
-      });
-    } catch (error) {
-      console.error('AssignMentor Error:', error);
-      res.status(500).json({ message: 'Server error' });
+    if (!mentorId || !menteeId) {
+      res.status(400).json({ message: "mentorId and menteeId are required" });
+      return;
     }
-  };
+
+    const existing = await MentorshipRequest.findOne({
+      mentor: mentorId,
+      mentee: menteeId,
+    });
+
+    if (existing) {
+      existing.status = "accepted";
+      await existing.save();
+      res
+        .status(200)
+        .json({ message: "Match updated to accepted", match: existing });
+      return;
+    }
+
+    const match = new MentorshipRequest({
+      mentor: mentorId,
+      mentee: menteeId,
+      status: "accepted",
+    });
+
+    await match.save();
+
+    res.status(201).json({
+      message: "Mentor assigned successfully",
+      match,
+    });
+  } catch (error) {
+    console.error("AssignMentor Error:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};

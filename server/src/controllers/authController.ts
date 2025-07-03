@@ -12,30 +12,30 @@ const generateToken = (userId: string, role: string) => {
 // @desc    Register a new user
 // @route   POST /auth/register
 // @access  Public
-export const registerUser = async (req: Request, res: Response) => {
+export const registerUser = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
   try {
     const { firstName, lastName, email, password, role, skills, goals, bio } =
       req.body;
 
-    // Basic input validation
     if (!firstName || !lastName || !email || !password) {
-      return res
-        .status(400)
-        .json({ message: "Please fill all required fields" });
+      res.status(400).json({ message: "Please fill all required fields" });
+      return;
     }
 
-    // Email format validation
     if (!validateEmail(email)) {
-      return res.status(400).json({ message: "Invalid email format" });
+      res.status(400).json({ message: "Invalid email format" });
+      return;
     }
 
-    // Check for existing user
     const existingUser = await User.findOne({ email });
     if (existingUser) {
-      return res.status(409).json({ message: "Email is already registered" });
+      res.status(409).json({ message: "Email is already registered" });
+      return;
     }
 
-    // Create and save new user
     const user = new User({
       firstName,
       lastName,
@@ -48,13 +48,11 @@ export const registerUser = async (req: Request, res: Response) => {
     });
     await user.save();
 
-    // Generate JWT token
     const token = generateToken(
       (user._id as mongoose.Types.ObjectId).toString(),
       user.role
     );
 
-    // Respond with user info (excluding password)
     res.status(201).json({
       message: "User registered successfully",
       user: {
@@ -76,43 +74,33 @@ export const registerUser = async (req: Request, res: Response) => {
 };
 
 // LOGIN CONTROLLER
-export const loginUser = async (req: Request, res: Response) => {
+export const loginUser = async (req: Request, res: Response): Promise<void> => {
   try {
     const { email, password } = req.body;
 
-    // Basic check
     if (!email || !password) {
-      return res
-        .status(400)
-        .json({ message: "Email and password are required" });
+      res.status(400).json({ message: "Email and password are required" });
+      return;
     }
 
-    // Normalize & validate email
     const normalizedEmail = validateEmail(email);
     if (!normalizedEmail) {
-      return res.status(400).json({ message: "Invalid email format" });
+      res.status(400).json({ message: "Invalid email format" });
+      return;
     }
 
-    // Find user by email
     const user = await User.findOne({ email: normalizedEmail });
-    if (!user) {
-      return res.status(401).json({ message: "Invalid credentials" });
+    if (!user || !(await user.comparePassword(password))) {
+      res.status(401).json({ message: "Invalid credentials" });
+      return;
     }
 
-    // Compare password
-    const isMatch = await user.comparePassword(password);
-    if (!isMatch) {
-      return res.status(401).json({ message: "Invalid credentials" });
-    }
-
-    // Generate token
     const token = generateToken(
       (user._id as mongoose.Types.ObjectId).toString(),
       user.role
     );
 
-    // Return success response
-    return res.status(200).json({
+    res.status(200).json({
       message: "Login successful",
       user: {
         id: user._id,
