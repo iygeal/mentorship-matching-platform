@@ -1,20 +1,22 @@
-import { Request, Response } from "express";
+import { Response } from "express";
 import User from "../models/user";
 import { AuthenticatedRequest } from "../middleware/authMiddleware";
 
 // @desc    Get current logged-in user's profile
-// @route   GET /users/me
-// @access  Private
-export const getMe = async (req: AuthenticatedRequest, res: Response) => {
+export const getMe = async (
+  req: AuthenticatedRequest,
+  res: Response
+): Promise<void> => {
   try {
-    // Ensure user is attached from JWT
     if (!req.user || !req.user.userId) {
-      return res.status(401).json({ message: "Unauthorized" });
+      res.status(401).json({ message: "Unauthorized" });
+      return;
     }
 
     const user = await User.findById(req.user.userId).select("-password");
     if (!user) {
-      return res.status(404).json({ message: "User not found" });
+      res.status(404).json({ message: "User not found" });
+      return;
     }
 
     res.status(200).json({
@@ -27,16 +29,23 @@ export const getMe = async (req: AuthenticatedRequest, res: Response) => {
   }
 };
 
+interface UpdateProfileBody {
+  firstName?: string;
+  lastName?: string;
+  bio?: string;
+  skills?: string[];
+  goals?: string;
+}
+
 // @desc    Update current user's profile
-// @route   PUT /users/me/profile
-// @access  Private
 export const updateProfile = async (
-  req: AuthenticatedRequest,
+  req: AuthenticatedRequest<{}, {}, UpdateProfileBody>,
   res: Response
-) => {
+): Promise<void> => {
   try {
     if (!req.user || !req.user.userId) {
-      return res.status(401).json({ message: "Unauthorized" });
+      res.status(401).json({ message: "Unauthorized" });
+      return;
     }
 
     const updates = {
@@ -47,7 +56,6 @@ export const updateProfile = async (
       goals: req.body.goals,
     };
 
-    // Remove undefined fields (only update what's sent)
     Object.keys(updates).forEach((key) => {
       if (updates[key as keyof typeof updates] === undefined) {
         delete updates[key as keyof typeof updates];
@@ -70,17 +78,16 @@ export const updateProfile = async (
   }
 };
 
-// @desc    Get all mentors (optional skill filter)
-// @route   GET /users/mentors
-// @access  Public (or protect if needed)
-export const getMentors = async (req: Request, res: Response) => {
+// @desc    Get all mentors (with optional skill filter)
+export const getMentors = async (
+  req: AuthenticatedRequest,
+  res: Response
+): Promise<void> => {
   try {
     const { skill } = req.query;
 
-    // Build query
     const query: any = { role: "mentor" };
 
-    // If skill is provided, filter mentors who have that skill
     if (skill) {
       query.skills = {
         $elemMatch: { $regex: new RegExp(skill as string, "i") },
