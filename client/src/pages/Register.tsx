@@ -49,10 +49,8 @@ const Register = () => {
         password: "",
         role: "mentee",
       });
-    } catch (err: any) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
+    } catch (err) {
+      console.error(err);
     }
   };
 
