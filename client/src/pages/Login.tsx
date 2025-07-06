@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const Login = () => {
   const [form, setForm] = useState({
@@ -7,6 +8,7 @@ const Login = () => {
   });
 
   const [message, setMessage] = useState("");
+  const navigate = useNavigate(); // hook for redirecting
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -35,11 +37,18 @@ const Login = () => {
         return;
       }
 
-      // Store token in localStorage
+      // Save user and token
       localStorage.setItem("token", data.token);
+      localStorage.setItem("user", JSON.stringify(data.user));
 
       setMessage("Login successful. Redirecting...");
-      // TODO: Redirect to dashboard
+
+      // Redirect based on role
+      if (data.user.role === "mentor" || data.user.role === "mentee") {
+        navigate("/role-dashboard");
+      } else {
+        navigate("/dashboard"); // fallback or admin etc.
+      }
     } catch (err) {
       console.error(err);
       setMessage("Something went wrong. Try again.");
