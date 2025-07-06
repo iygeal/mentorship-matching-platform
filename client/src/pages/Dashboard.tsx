@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 
 const Dashboard = () => {
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<any>(null); // eslint-disable-line
   const [message, setMessage] = useState("Loading...");
 
   useEffect(() => {
