@@ -19,6 +19,7 @@ const Navbar = () => {
           <Link to="/role-dashboard">Dashboard</Link> |{" "}
           <Link to="/requests">Requests</Link> |{" "}
           <button onClick={handleLogout}>Logout</button>
+          <Link to="/availability">Availability</Link> | {" "}
         </>
       )}
       {user?.role === "mentee" && (

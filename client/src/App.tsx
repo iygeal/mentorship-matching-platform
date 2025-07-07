@@ -7,6 +7,7 @@ import Mentors from "./pages/Mentors";
 import Requests from "./pages/Requests";
 import Navbar from "./components/Navbar";
 import ProtectedRoute from "./components/ProtectedRoute";
+import Availability from "./pages/Availability";
 
 // Role-specific dashboards
 import MentorDashboard from "./pages/dashboards/MentorDashboard";
@@ -65,6 +66,14 @@ const App = () => {
               ) : (
                 <p>Unauthorized</p>
               )}
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/availability"
+          element={
+            <ProtectedRoute>
+              <Availability />
             </ProtectedRoute>
           }
         />
