@@ -140,35 +140,51 @@ const Requests = () => {
   }, []);
 
   return (
-    <div style={{ maxWidth: 600, margin: "auto" }}>
-      <h2>{userRole === "mentee" ? "Sent Requests" : "Incoming Requests"}</h2>
+    <div className="max-w-2xl mx-auto mt-10 bg-white p-6 shadow-md rounded-lg">
+      <h2 className="text-2xl font-bold mb-4 text-emerald-700 text-center">
+        {userRole === "mentee" ? "Sent Requests" : "Incoming Requests"}
+      </h2>
 
-      {message && <p>{message}</p>}
+      {message && <p className="text-center text-red-600 mb-4">{message}</p>}
 
-      <ul>
+      <ul className="space-y-6">
         {requests.map((req: any) => (
-          <li key={req._id} style={{ marginBottom: "1rem" }}>
-            To/From: <strong>{displayName(req)}</strong> <br />
-            Status: <strong>{req.status}</strong> <br />
+          <li key={req._id} className="border-b pb-4">
+            <p>
+              <span className="font-semibold">To/From:</span>{" "}
+              {displayName(req)}
+            </p>
+            <p>
+              <span className="font-semibold">Status:</span>{" "}
+              <span className="capitalize">{req.status}</span>
+            </p>
+
             {/* Mentor controls */}
             {userRole === "mentor" && req.status === "pending" && (
-              <>
+              <div className="mt-2 space-x-2">
                 <button
+                  className="bg-emerald-600 text-white px-3 py-1 rounded hover:bg-emerald-700"
                   onClick={() => handleAction(req._id, "accepted")}
-                  style={{ marginRight: "0.5rem" }}
                 >
                   Accept
                 </button>
-                <button onClick={() => handleAction(req._id, "rejected")}>
+                <button
+                  className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
+                  onClick={() => handleAction(req._id, "rejected")}
+                >
                   Reject
                 </button>
-              </>
+              </div>
             )}
-            {/* Mentee controls: Book session if accepted */}
+
+            {/* Mentee controls */}
             {userRole === "mentee" &&
               req.status === "accepted" &&
               req.mentor?._id && (
-                <button onClick={() => fetchAvailability(req.mentor._id)}>
+                <button
+                  onClick={() => fetchAvailability(req.mentor._id)}
+                  className="mt-2 inline-block bg-emerald-600 text-white px-3 py-1 rounded hover:bg-emerald-700"
+                >
                   Book Session
                 </button>
               )}
@@ -178,26 +194,32 @@ const Requests = () => {
 
       {/* Slot picker */}
       {availability.length > 0 && selectedMentorId && (
-        <div style={{ border: "1px solid #ccc", padding: "1rem" }}>
-          <h4>Pick a Slot:</h4>
-          <ul>
+        <div className="mt-6 border-t pt-4">
+          <h4 className="font-semibold mb-2">Pick a Slot:</h4>
+          <ul className="space-y-2">
             {availability.map((slot) => (
               <li key={slot._id}>
                 {slot.day}: {slot.startTime} - {slot.endTime}{" "}
                 <button
+                  className="ml-2 bg-emerald-500 hover:bg-emerald-600 text-white px-2 py-1 rounded"
                   onClick={() => bookSession(selectedMentorId, slot)}
-                  style={{ marginLeft: "0.5rem" }}
                 >
                   Book
                 </button>
               </li>
             ))}
           </ul>
-          <button onClick={() => setAvailability([])}>Close</button>
+          <button
+            className="mt-4 text-sm text-gray-600 hover:text-gray-800 underline"
+            onClick={() => setAvailability([])}
+          >
+            Close
+          </button>
         </div>
       )}
     </div>
   );
+
 };
 
 export default Requests;

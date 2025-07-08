@@ -104,91 +104,104 @@ const Sessions = () => {
   }, []);
 
   return (
-    <div style={{ maxWidth: 600, margin: "auto" }}>
-      <h2>Your Sessions</h2>
+    <ul className="space-y-6">
+      {sessions.map((session) => (
+        <li
+          key={session._id}
+          className="bg-gray-50 border border-gray-300 rounded-lg p-4 shadow-sm"
+        >
+          <p>
+            <span className="font-semibold">With:</span> {displayName(session)}
+          </p>
+          <p>
+            <span className="font-semibold">Time:</span>{" "}
+            {formatDateTime(session.scheduledAt)}
+          </p>
 
-      {message && <p>{message}</p>}
+          {session.feedback ? (
+            <div className="mt-2">
+              <p>
+                <span className="font-semibold">Feedback:</span>{" "}
+                <em>{session.feedback}</em>
+              </p>
+              {session.rating && (
+                <p>
+                  <span className="font-semibold">Rating:</span> ⭐{" "}
+                  {session.rating}/5
+                </p>
+              )}
+            </div>
+          ) : (
+            <div className="mt-2">
+              <p className="italic text-gray-600">No feedback yet</p>
+              {showFormFor === session._id ? (
+                <div className="mt-2 space-y-2">
+                  <textarea
+                    rows={3}
+                    placeholder="Write your feedback..."
+                    value={feedbackData[session._id]?.feedback || ""}
+                    onChange={(e) =>
+                      handleFeedbackChange(
+                        session._id,
+                        "feedback",
+                        e.target.value
+                      )
+                    }
+                    className="w-full border rounded px-3 py-2"
+                  />
 
-      {sessions.length === 0 ? (
-        <p>No sessions yet.</p>
-      ) : (
-        <ul>
-          {sessions.map((session) => (
-            <li key={session._id} style={{ marginBottom: "2rem" }}>
-              With: <strong>{displayName(session)}</strong> <br />
-              Time: {formatDateTime(session.scheduledAt)} <br />
-              {session.feedback ? (
-                <>
-                  Feedback: <em>{session.feedback}</em> <br />
-                  {session.rating && <span>Rating: ⭐ {session.rating}/5</span>}
-                </>
-              ) : (
-                <>
-                  <em>No feedback yet</em> <br />
-                  {showFormFor === session._id ? (
-                    <>
-                      <textarea
-                        rows={3}
-                        placeholder="Write your feedback..."
-                        value={feedbackData[session._id]?.feedback || ""}
+                  {role === "mentee" && (
+                    <div>
+                      <label className="font-semibold mr-2">Rating:</label>
+                      <select
+                        value={feedbackData[session._id]?.rating || ""}
                         onChange={(e) =>
                           handleFeedbackChange(
                             session._id,
-                            "feedback",
+                            "rating",
                             e.target.value
                           )
                         }
-                        style={{ width: "100%", marginTop: "0.5rem" }}
-                      />
-                      {role === "mentee" && (
-                        <>
-                          <br />
-                          Rating:{" "}
-                          <select
-                            value={feedbackData[session._id]?.rating || ""}
-                            onChange={(e) =>
-                              handleFeedbackChange(
-                                session._id,
-                                "rating",
-                                e.target.value
-                              )
-                            }
-                          >
-                            <option value="">--Select--</option>
-                            <option value="1">1</option>
-                            <option value="2">2</option>
-                            <option value="3">3</option>
-                            <option value="4">4</option>
-                            <option value="5">5</option>
-                          </select>
-                        </>
-                      )}
-                      <br />
-                      <button
-                        onClick={() => submitFeedback(session._id)}
-                        style={{ marginTop: "0.5rem" }}
+                        className="border rounded px-2 py-1"
                       >
-                        Submit Feedback
-                      </button>{" "}
-                      <button
-                        onClick={() => setShowFormFor(null)}
-                        style={{ marginLeft: "0.5rem" }}
-                      >
-                        Cancel
-                      </button>
-                    </>
-                  ) : (
-                    <button onClick={() => setShowFormFor(session._id)}>
-                      Leave Feedback
-                    </button>
+                        <option value="">--Select--</option>
+                        {[1, 2, 3, 4, 5].map((n) => (
+                          <option key={n} value={n}>
+                            {n}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
                   )}
-                </>
+
+                  <div className="space-x-2">
+                    <button
+                      className="bg-emerald-600 text-white px-3 py-1 rounded hover:bg-emerald-700"
+                      onClick={() => submitFeedback(session._id)}
+                    >
+                      Submit Feedback
+                    </button>
+                    <button
+                      className="bg-gray-300 text-gray-800 px-3 py-1 rounded hover:bg-gray-400"
+                      onClick={() => setShowFormFor(null)}
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <button
+                  className="mt-2 bg-emerald-600 text-white px-3 py-1 rounded hover:bg-emerald-700"
+                  onClick={() => setShowFormFor(session._id)}
+                >
+                  Leave Feedback
+                </button>
               )}
-            </li>
-          ))}
-        </ul>
-      )}
-    </div>
+            </div>
+          )}
+        </li>
+      ))}
+    </ul>
   );
 };
 

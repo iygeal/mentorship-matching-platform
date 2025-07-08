@@ -93,60 +93,87 @@ const Availability = () => {
   }, []);
 
   return (
-    <div style={{ maxWidth: 600, margin: "auto" }}>
-      <h2>Your Availability</h2>
+    <div className="max-w-xl mx-auto mt-10 bg-white p-6 shadow-md rounded-lg">
+      <h2 className="text-2xl font-bold text-emerald-700 mb-4 text-center">
+        Your Availability
+      </h2>
 
-      {message && <p>{message}</p>}
+      {message && <p className="text-center text-red-600 mb-4">{message}</p>}
 
-      <form onSubmit={handleAddSlot}>
-        <label>
-          Day:
-          <select value={day} onChange={(e) => setDay(e.target.value)} required>
+      <form onSubmit={handleAddSlot} className="space-y-4">
+        <div>
+          <label className="block font-semibold mb-1">Day:</label>
+          <select
+            value={day}
+            onChange={(e) => setDay(e.target.value)}
+            required
+            className="w-full border rounded px-3 py-2"
+          >
             <option value="">--Select--</option>
-            <option>Monday</option>
-            <option>Tuesday</option>
-            <option>Wednesday</option>
-            <option>Thursday</option>
-            <option>Friday</option>
-            <option>Saturday</option>
-            <option>Sunday</option>
+            {[
+              "Monday",
+              "Tuesday",
+              "Wednesday",
+              "Thursday",
+              "Friday",
+              "Saturday",
+              "Sunday",
+            ].map((d) => (
+              <option key={d}>{d}</option>
+            ))}
           </select>
-        </label>
-        <br />
-        <label>
-          Start Time:
+        </div>
+
+        <div>
+          <label className="block font-semibold mb-1">Start Time:</label>
           <input
             type="time"
             value={startTime}
             onChange={(e) => setStartTime(e.target.value)}
             required
+            className="w-full border rounded px-3 py-2"
           />
-        </label>
-        <br />
-        <label>
-          End Time:
+        </div>
+
+        <div>
+          <label className="block font-semibold mb-1">End Time:</label>
           <input
             type="time"
             value={endTime}
             onChange={(e) => setEndTime(e.target.value)}
             required
+            className="w-full border rounded px-3 py-2"
           />
-        </label>
-        <br />
-        <button type="submit">Add Slot</button>
+        </div>
+
+        <button
+          type="submit"
+          className="bg-emerald-600 text-white px-4 py-2 rounded hover:bg-emerald-700"
+        >
+          Add Slot
+        </button>
       </form>
 
-      <h3>Current Slots:</h3>
-      <ul>
+      <h3 className="mt-8 text-lg font-semibold text-gray-700">Current Slots:</h3>
+      <ul className="mt-2 space-y-2">
         {availability.map((slot) => (
-          <li key={slot._id} style={{ marginBottom: "1rem" }}>
-            {slot.day}: {slot.startTime} - {slot.endTime}{" "}
-            <button onClick={() => handleDeleteSlot(slot._id)}>Delete</button>
+          <li
+            key={slot._id}
+            className="flex justify-between items-center bg-gray-50 border px-4 py-2 rounded"
+          >
+            {slot.day}: {slot.startTime} - {slot.endTime}
+            <button
+              onClick={() => handleDeleteSlot(slot._id)}
+              className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600 ml-4"
+            >
+              Delete
+            </button>
           </li>
         ))}
       </ul>
     </div>
   );
+
 };
 
 export default Availability;
