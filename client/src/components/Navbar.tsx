@@ -18,8 +18,9 @@ const Navbar = () => {
           <Link to="/dashboard">Profile</Link> |{" "}
           <Link to="/role-dashboard">Dashboard</Link> |{" "}
           <Link to="/requests">Requests</Link> |{" "}
+          <Link to="/availability">Availability</Link> |{" "}
+          <Link to="/sessions">Sessions</Link> |{" "}
           <button onClick={handleLogout}>Logout</button>
-          <Link to="/availability">Availability</Link> | {" "}
         </>
       )}
       {user?.role === "mentee" && (
@@ -28,6 +29,7 @@ const Navbar = () => {
           <Link to="/role-dashboard">Dashboard</Link> |{" "}
           <Link to="/mentors">Mentors</Link> |{" "}
           <Link to="/requests">Requests</Link> |{" "}
+          <Link to="/sessions">Sessions</Link> |{" "}
           <button onClick={handleLogout}>Logout</button>
         </>
       )}
