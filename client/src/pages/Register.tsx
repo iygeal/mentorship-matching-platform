@@ -6,7 +6,10 @@ const Register = () => {
     lastName: "",
     email: "",
     password: "",
-    role: "mentee", // default role
+    role: "mentee",
+    bio: "",
+    goals: "",
+    skills: "",
   });
 
   const [loading, setLoading] = useState(false);
@@ -31,7 +34,10 @@ const Register = () => {
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(formData),
+          body: JSON.stringify({
+            ...formData,
+            skills: formData.skills.split(",").map((s) => s.trim()),
+          }),
         }
       );
 
@@ -48,6 +54,9 @@ const Register = () => {
         email: "",
         password: "",
         role: "mentee",
+        bio: "",
+        goals: "",
+        skills: "",
       });
     } catch (err) {
       console.error(err);
@@ -86,6 +95,36 @@ const Register = () => {
           name="email"
           placeholder="Email"
           value={formData.email}
+          onChange={handleChange}
+          required
+        />
+        <br />
+
+        <input
+          type="text"
+          name="bio"
+          placeholder="Bio"
+          value={formData.bio}
+          onChange={handleChange}
+          required
+        />
+        <br />
+
+        <input
+          type="text"
+          name="goals"
+          placeholder="Goals"
+          value={formData.goals}
+          onChange={handleChange}
+          required
+        />
+        <br />
+
+        <input
+          type="text"
+          name="skills"
+          placeholder="Skills (separated by commas)"
+          value={formData.skills}
           onChange={handleChange}
           required
         />

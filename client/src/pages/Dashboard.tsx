@@ -60,6 +60,9 @@ const Dashboard = () => {
             <strong>Bio:</strong> {user.bio || "N/A"}
           </p>
           <p>
+            <strong>Skills:</strong> {user.skills?.join(", ") || "N/A"}
+          </p>
+          <p>
             <strong>Goals:</strong> {user.goals || "N/A"}
           </p>
         </div>

@@ -8,6 +8,7 @@ import Requests from "./pages/Requests";
 import Navbar from "./components/Navbar";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Availability from "./pages/Availability";
+import Sessions from "./pages/Sessions";
 
 // Role-specific dashboards
 import MentorDashboard from "./pages/dashboards/MentorDashboard";
@@ -77,6 +78,7 @@ const App = () => {
             </ProtectedRoute>
           }
         />
+        <Route path="/sessions" element={<Sessions />} />
       </Routes>
     </Router>
   );
