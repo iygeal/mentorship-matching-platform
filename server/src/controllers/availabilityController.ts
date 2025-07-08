@@ -80,3 +80,18 @@ export const deleteAvailability = async (
     res.status(500).json({ message: "Server error" });
   }
 };
+
+// @desc    Get all availability slots for a specific mentor
+export const getAvailabilityByMentor = async (
+  req: AuthenticatedRequest<{ mentorId: string }>,
+  res: Response
+) => {
+  try {
+    const { mentorId } = req.params;
+    const slots = await Availability.find({ mentor: mentorId });
+    res.status(200).json({ availability: slots });
+  } catch (error) {
+    console.error("getAvailabilityByMentor Error:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
