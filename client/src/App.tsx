@@ -21,65 +21,70 @@ const App = () => {
   return (
     <Router>
       <Navbar />
-      <Routes>
-        {/* Public Routes */}
-        <Route path="/" element={<Home />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/login" element={<Login />} />
+      <div className="max-w-4xl mx-auto p-4">
+        <Routes>
+          {/* Public Routes */}
+          <Route path="/" element={<Home />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/login" element={<Login />} />
 
-        {/* Protected Routes */}
-        <Route
-          path="/dashboard"
-          element={
-            <ProtectedRoute>
-              <Dashboard />
-            </ProtectedRoute>
-          }
-        />
-
-        <Route
-          path="/requests"
-          element={
-            <ProtectedRoute>
-              <Requests />
-            </ProtectedRoute>
-          }
-        />
-
-        <Route
-          path="/mentors"
-          element={
-            <ProtectedRoute>
-              <Mentors />
-            </ProtectedRoute>
-          }
-        />
-
-        {/* Role-Specific Dashboard */}
-        <Route
-          path="/role-dashboard"
-          element={
-            <ProtectedRoute>
-              {role === "mentor" ? (
-                <MentorDashboard />
-              ) : role === "mentee" ? (
-                <MenteeDashboard />
-              ) : (
-                <p>Unauthorized</p>
-              )}
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/availability"
-          element={
-            <ProtectedRoute>
-              <Availability />
-            </ProtectedRoute>
-          }
-        />
-        <Route path="/sessions" element={<Sessions />} />
-      </Routes>
+          {/* Protected Routes */}
+          <Route
+            path="/dashboard"
+            element={
+              <ProtectedRoute>
+                <Dashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/requests"
+            element={
+              <ProtectedRoute>
+                <Requests />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/mentors"
+            element={
+              <ProtectedRoute>
+                <Mentors />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/role-dashboard"
+            element={
+              <ProtectedRoute>
+                {role === "mentor" ? (
+                  <MentorDashboard />
+                ) : role === "mentee" ? (
+                  <MenteeDashboard />
+                ) : (
+                  <p>Unauthorized</p>
+                )}
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/availability"
+            element={
+              <ProtectedRoute>
+                <Availability />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/sessions"
+            element={
+              <ProtectedRoute>
+                <Sessions />
+              </ProtectedRoute>
+            }
+          />
+        </Routes>
+      </div>
     </Router>
   );
 };

@@ -40,35 +40,49 @@ const Dashboard = () => {
 
     fetchProfile();
   }, []);
-
   return (
-    <div style={{ maxWidth: 500, margin: "auto" }}>
-      <h2>Dashboard</h2>
-      {message && <p>{message}</p>}
+    <div className="max-w-md mx-auto mt-10 bg-white shadow-md p-6 rounded-lg">
+      <h2 className="text-2xl font-bold text-emerald-700 mb-4 text-center">
+        Your Profile
+      </h2>
+
+      {message && (
+        <p
+          className={`text-center mb-4 ${
+            message.toLowerCase().includes("error") ? "text-red-600" : "text-gray-700"
+          }`}
+        >
+          {message}
+        </p>
+      )}
+
       {user && (
-        <div>
+        <div className="space-y-2">
           <p>
-            <strong>Name:</strong> {user.firstName} {user.lastName}
+            <span className="font-semibold">Name:</span>{" "}
+            {user.firstName} {user.lastName}
           </p>
           <p>
-            <strong>Email:</strong> {user.email}
+            <span className="font-semibold">Email:</span> {user.email}
           </p>
           <p>
-            <strong>Role:</strong> {user.role}
+            <span className="font-semibold">Role:</span> {user.role}
           </p>
           <p>
-            <strong>Bio:</strong> {user.bio || "N/A"}
+            <span className="font-semibold">Bio:</span> {user.bio || "N/A"}
           </p>
           <p>
-            <strong>Skills:</strong> {user.skills?.join(", ") || "N/A"}
+            <span className="font-semibold">Skills:</span>{" "}
+            {user.skills?.join(", ") || "N/A"}
           </p>
           <p>
-            <strong>Goals:</strong> {user.goals || "N/A"}
+            <span className="font-semibold">Goals:</span> {user.goals || "N/A"}
           </p>
         </div>
       )}
     </div>
   );
+
 };
 
 export default Dashboard;

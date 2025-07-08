@@ -64,12 +64,13 @@ const Register = () => {
   };
 
   return (
-    <div>
-      <h2>Register</h2>
-      {error && <p style={{ color: "crimson" }}>{error}</p>}
-      {success && <p style={{ color: "green" }}>{success}</p>}
+    <div className="max-w-lg mx-auto mt-10 bg-white shadow-md p-6 rounded-lg">
+      <h2 className="text-2xl font-bold mb-4 text-center">Register</h2>
 
-      <form onSubmit={handleSubmit}>
+      {error && <p className="text-red-600 mb-4">{error}</p>}
+      {success && <p className="text-green-600 mb-4">{success}</p>}
+
+      <form onSubmit={handleSubmit} className="space-y-4">
         <input
           type="text"
           name="firstName"
@@ -77,8 +78,8 @@ const Register = () => {
           value={formData.firstName}
           onChange={handleChange}
           required
+          className="w-full border rounded px-3 py-2"
         />
-        <br />
 
         <input
           type="text"
@@ -87,8 +88,8 @@ const Register = () => {
           value={formData.lastName}
           onChange={handleChange}
           required
+          className="w-full border rounded px-3 py-2"
         />
-        <br />
 
         <input
           type="email"
@@ -97,38 +98,38 @@ const Register = () => {
           value={formData.email}
           onChange={handleChange}
           required
+          className="w-full border rounded px-3 py-2"
         />
-        <br />
 
         <input
           type="text"
           name="bio"
-          placeholder="Bio"
+          placeholder="Short Bio"
           value={formData.bio}
           onChange={handleChange}
           required
+          className="w-full border rounded px-3 py-2"
         />
-        <br />
 
         <input
           type="text"
           name="goals"
-          placeholder="Goals"
+          placeholder="Your Goals"
           value={formData.goals}
           onChange={handleChange}
           required
+          className="w-full border rounded px-3 py-2"
         />
-        <br />
 
         <input
           type="text"
           name="skills"
-          placeholder="Skills (separated by commas)"
+          placeholder="Skills (comma-separated)"
           value={formData.skills}
           onChange={handleChange}
           required
+          className="w-full border rounded px-3 py-2"
         />
-        <br />
 
         <input
           type="password"
@@ -137,16 +138,24 @@ const Register = () => {
           value={formData.password}
           onChange={handleChange}
           required
+          className="w-full border rounded px-3 py-2"
         />
-        <br />
 
-        <select name="role" value={formData.role} onChange={handleChange}>
+        <select
+          name="role"
+          value={formData.role}
+          onChange={handleChange}
+          className="w-full border rounded px-3 py-2"
+        >
           <option value="mentee">Mentee</option>
           <option value="mentor">Mentor</option>
         </select>
-        <br />
 
-        <button type="submit" disabled={loading}>
+        <button
+          type="submit"
+          disabled={loading}
+          className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
+        >
           {loading ? "Registering..." : "Register"}
         </button>
       </form>

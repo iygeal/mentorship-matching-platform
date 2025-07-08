@@ -56,9 +56,24 @@ const Login = () => {
   };
 
   return (
-    <div style={{ maxWidth: 400, margin: "auto" }}>
-      <h2>Login</h2>
-      <form onSubmit={handleSubmit}>
+    <div className="max-w-md mx-auto mt-12 bg-white shadow-md p-6 rounded-lg">
+      <h2 className="text-2xl font-bold text-center mb-4 text-emerald-700">
+        Login
+      </h2>
+
+      {message && (
+        <p
+          className={`text-center mb-4 ${
+            message.toLowerCase().includes("success")
+              ? "text-green-600"
+              : "text-red-600"
+          }`}
+        >
+          {message}
+        </p>
+      )}
+
+      <form onSubmit={handleSubmit} className="space-y-4">
         <input
           type="email"
           name="email"
@@ -66,8 +81,9 @@ const Login = () => {
           value={form.email}
           onChange={handleChange}
           required
+          className="w-full border rounded px-3 py-2"
         />
-        <br />
+
         <input
           type="password"
           name="password"
@@ -75,11 +91,16 @@ const Login = () => {
           value={form.password}
           onChange={handleChange}
           required
+          className="w-full border rounded px-3 py-2"
         />
-        <br />
-        <button type="submit">Login</button>
+
+        <button
+          type="submit"
+          className="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-2 rounded"
+        >
+          Login
+        </button>
       </form>
-      {message && <p>{message}</p>}
     </div>
   );
 };
