@@ -5,6 +5,8 @@ const Requests = () => {
   const [requests, setRequests] = useState([]);
   const [userRole, setUserRole] = useState("");
   const [message, setMessage] = useState("");
+  const [availability, setAvailability] = useState<any[]>([]);
+  const [selectedMentorId, setSelectedMentorId] = useState<string | null>(null);
 
   const token = localStorage.getItem("token");
   const user = JSON.parse(localStorage.getItem("user") || "null");
@@ -42,15 +44,25 @@ const Requests = () => {
     }
   };
 
-  useEffect(() => {
-    fetchRequests();
-  }, []);
+  const fetchAvailability = async (mentorId: string) => {
+    try {
+      const res = await fetch(`${baseUrl}/api/v1/availability/${mentorId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      const data = await res.json();
 
-  const displayName = (request: any) => {
-    if (userRole === "mentee") {
-      return `${request.mentor.firstName} ${request.mentor.lastName}`;
-    } else {
-      return `${request.mentee.firstName} ${request.mentee.lastName}`;
+      if (!res.ok) {
+        setMessage(data.message || "Could not fetch availability.");
+        return;
+      }
+
+      setSelectedMentorId(mentorId);
+      setAvailability(data.availability || []);
+    } catch (err) {
+      console.error(err);
+      setMessage("Error loading availability.");
     }
   };
 
@@ -62,7 +74,7 @@ const Requests = () => {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ status }), // lowercase as required
+        body: JSON.stringify({ status }),
       });
 
       const data = await res.json();
@@ -80,6 +92,53 @@ const Requests = () => {
     }
   };
 
+  const bookSession = async (mentorId: string, slot: any) => {
+    const scheduledAt = new Date(); // Optional: calculate proper datetime
+    scheduledAt.setHours(Number(slot.startTime.split(":")[0]));
+    scheduledAt.setMinutes(Number(slot.startTime.split(":")[1]));
+
+    try {
+      const res = await fetch(`${baseUrl}/api/v1/sessions`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          mentorId,
+          scheduledAt,
+          notes: "Looking forward to learning!", // optional
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        setMessage(data.message || "Failed to book session");
+        return;
+      }
+
+      setMessage("Session booked successfully!");
+      setSelectedMentorId(null);
+      setAvailability([]);
+    } catch (err) {
+      console.error(err);
+      setMessage("Error booking session.");
+    }
+  };
+
+  const displayName = (request: any) => {
+    if (userRole === "mentee") {
+      return `${request.mentor.firstName} ${request.mentor.lastName}`;
+    } else {
+      return `${request.mentee.firstName} ${request.mentee.lastName}`;
+    }
+  };
+
+  useEffect(() => {
+    fetchRequests();
+  }, []);
+
   return (
     <div style={{ maxWidth: 600, margin: "auto" }}>
       <h2>{userRole === "mentee" ? "Sent Requests" : "Incoming Requests"}</h2>
@@ -91,7 +150,7 @@ const Requests = () => {
           <li key={req._id} style={{ marginBottom: "1rem" }}>
             To/From: <strong>{displayName(req)}</strong> <br />
             Status: <strong>{req.status}</strong> <br />
-            {/* Show Accept/Reject if mentor and status is pending */}
+            {/* Mentor controls */}
             {userRole === "mentor" && req.status === "pending" && (
               <>
                 <button
@@ -105,9 +164,38 @@ const Requests = () => {
                 </button>
               </>
             )}
+            {/* Mentee controls: Book session if accepted */}
+            {userRole === "mentee" &&
+              req.status === "accepted" &&
+              req.mentor?._id && (
+                <button onClick={() => fetchAvailability(req.mentor._id)}>
+                  Book Session
+                </button>
+              )}
           </li>
         ))}
       </ul>
+
+      {/* Slot picker */}
+      {availability.length > 0 && selectedMentorId && (
+        <div style={{ border: "1px solid #ccc", padding: "1rem" }}>
+          <h4>Pick a Slot:</h4>
+          <ul>
+            {availability.map((slot) => (
+              <li key={slot._id}>
+                {slot.day}: {slot.startTime} - {slot.endTime}{" "}
+                <button
+                  onClick={() => bookSession(selectedMentorId, slot)}
+                  style={{ marginLeft: "0.5rem" }}
+                >
+                  Book
+                </button>
+              </li>
+            ))}
+          </ul>
+          <button onClick={() => setAvailability([])}>Close</button>
+        </div>
+      )}
     </div>
   );
 };
