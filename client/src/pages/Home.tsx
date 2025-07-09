@@ -1,6 +1,8 @@
+import { Link } from "react-router-dom";
+
 const Home = () => {
   return (
-    <div className="min-h-[80vh] flex flex-col justify-center items-center text-center px-4">
+    <div className="min-h-[80vh] mt-12 flex flex-col justify-start items-center text-center px-4">
       <h1 className="text-3xl md:text-4xl font-bold text-emerald-700 mb-4">
         Welcome to Mentorship Matching Platform Developed by Iygeal
       </h1>
@@ -15,6 +17,13 @@ const Home = () => {
       <p className="mt-4 text-gray-600">
         Get started by registering an account or logging in to your dashboard.
       </p>
+
+      <Link
+        to="/register"
+        className="mt-6 bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-2 rounded-lg shadow-md transition duration-200"
+      >
+        Get Started
+      </Link>
     </div>
   );
 };
