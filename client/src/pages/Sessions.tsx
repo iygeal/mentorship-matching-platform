@@ -201,6 +201,11 @@ const Sessions = () => {
           )}
         </li>
       ))}
+      {message && (
+        <div className="mb-4 p-3 rounded bg-yellow-100 text-yellow-800 border border-yellow-300">
+          {message}
+        </div>
+      )}
     </ul>
   );
 };
