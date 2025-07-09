@@ -110,3 +110,28 @@ export const addFeedback = async (
     res.status(500).json({ message: "Server error" });
   }
 };
+
+// @desc    Get sessions for current user (mentor or mentee)
+export const getMySessions = async (
+  req: AuthenticatedRequest,
+  res: Response
+): Promise<void> => {
+  try {
+    if (!req.user?.userId) {
+      res.status(401).json({ message: "Unauthorized" });
+      return;
+    }
+
+    const sessions = await Session.find({
+      $or: [{ mentor: req.user.userId }, { mentee: req.user.userId }],
+    })
+      .populate("mentor", "firstName lastName email")
+      .populate("mentee", "firstName lastName email")
+      .sort({ scheduledAt: -1 });
+
+    res.status(200).json({ sessions });
+  } catch (error) {
+    console.error("GetMySessions Error:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
