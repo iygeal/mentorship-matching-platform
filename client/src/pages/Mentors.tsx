@@ -61,39 +61,55 @@ const Mentors = () => {
   };
 
   return (
-    <div style={{ maxWidth: 600, margin: "auto" }}>
-      <h2>Discover Mentors</h2>
+    <div className="max-w-3xl mx-auto mt-12 px-4">
+      <h2 className="text-3xl font-bold text-emerald-700 mb-6 text-center">
+        Discover Mentors
+      </h2>
 
-      <form onSubmit={handleSearch}>
+      <form
+        onSubmit={handleSearch}
+        className="flex flex-col sm:flex-row gap-2 mb-6 justify-center"
+      >
         <input
           type="text"
           placeholder="Filter by skill..."
           value={skill}
           onChange={(e) => setSkill(e.target.value)}
+          className="border border-gray-300 rounded px-4 py-2 w-full sm:w-auto"
         />
-        <button type="submit">Search</button>
+        <button
+          type="submit"
+          className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded"
+        >
+          Search
+        </button>
       </form>
 
-      {message && <p>{message}</p>}
+      {message && <p className="text-red-600 text-center">{message}</p>}
 
-      <ul>
-        {mentors.map(
-          (
-            mentor: any // eslint-disable-line
-          ) => (
-            <li key={mentor._id} style={{ marginBottom: "1rem" }}>
-              <strong>
-                {mentor.firstName} {mentor.lastName}
-              </strong>{" "}
-              <br />
-              <em>{mentor.email}</em> <br />
-              Skills: {mentor.skills?.join(", ") || "N/A"} <br />
-              <button onClick={() => handleRequest(mentor._id)}>
-                Request Mentorship
-              </button>
-            </li>
-          )
-        )}
+      <ul className="space-y-6">
+        {mentors.map((mentor: any) => (
+          <li
+            key={mentor._id}
+            className="bg-white rounded-lg shadow-md p-4 border"
+          >
+            <h3 className="text-xl font-semibold text-emerald-700">
+              {mentor.firstName} {mentor.lastName}
+            </h3>
+            <p className="text-gray-600">
+              <em>{mentor.email}</em>
+            </p>
+            <p className="mt-1 text-gray-700">
+              <strong>Skills:</strong> {mentor.skills?.join(", ") || "N/A"}
+            </p>
+            <button
+              onClick={() => handleRequest(mentor._id)}
+              className="mt-3 bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded"
+            >
+              Request Mentorship
+            </button>
+          </li>
+        ))}
       </ul>
     </div>
   );
