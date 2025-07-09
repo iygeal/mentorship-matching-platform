@@ -9,7 +9,17 @@ import connectDB from "./config/db";
 
 const app = express();
 
-app.use(cors());
+const allowedOrigins = [
+  "http://localhost:5173", // for development
+  "https://mentorship-by-iygeal.vercel.app", // Vercel frontend
+];
+
+app.use(
+  cors({
+    origin: allowedOrigins,
+    credentials: true,
+  })
+);
 app.use(express.json());
 app.use("/api/v1", mainRoutes);
 
